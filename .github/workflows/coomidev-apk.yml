@@ -1,0 +1,191 @@
+name: CoomiDev APK (build)
+
+# CoomiDev APK 构建工作流
+# 在用户的 fork 中触发；不会触碰官方仓库。
+# 默认 ref 来自工作流输入或调用分支，绝不硬编码 main。
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Source branch or tag to build (defaults to the calling branch; never hardcode main)'
+        required: false
+        type: string
+        default: ''
+      upload_apk:
+        description: 'Upload the signed debug APK as a build artifact'
+        required: false
+        type: boolean
+        default: true
+      skip_checks:
+        description: 'Skip Vue/Rust checks (use only for emergency builds)'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coomidev-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-coomidev:
+    name: Build & verify CoomiDev APK
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      # 固定所有工具链版本以保证可复现
+      JAVA_VERSION: '17'
+      NODE_VERSION: '20'
+      RUST_VERSION: '1.95.0'
+      ANDROID_COMPILE_SDK: '36'
+      ANDROID_BUILD_TOOLS: '36.0.0'
+      ANDROID_NDK_VERSION: '27.0.12077973'
+      ANDROID_PLATFORM_TOOLS: '36.0.0'
+      GRADLE_OPTS: '-Xmx2g -Dorg.gradle.jvmargs=-Xmx2g'
+      # COOMI_DEV_BUILD=1 切换包名到 com.coomidev.android、应用名 CoomiDev、端口 18765
+      COOMI_DEV_BUILD: '1'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          fetch-depth: 1
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Set up Rust 1.95
+        uses: dtolnay/rust-toolchain@1.95.0
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+          targets: aarch64-linux-android
+          components: clippy, rustfmt
+
+      - name: Cache Cargo registry & target
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            apps/coomi-rs/target
+          key: cargo-${{ runner.os }}-${{ hashFiles('apps/coomi-rs/Cargo.lock') }}
+          restore-keys: |
+            cargo-${{ runner.os }}-
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android components
+        run: |
+          yes | sdkmanager --licenses > /dev/null
+          sdkmanager \
+            "platform-tools;${{ env.ANDROID_PLATFORM_TOOLS }}" \
+            "platforms;android-${{ env.ANDROID_COMPILE_SDK }}" \
+            "build-tools;${{ env.ANDROID_BUILD_TOOLS }}" \
+            "ndk;${{ env.ANDROID_NDK_VERSION }}"
+
+      - name: Write local.properties for signing
+        # 项目从 local.properties 读取签名口令；testkey_untrusted.jks 已包含在仓库中。
+        # 这是仓库自己的 dev 签名约定，CI 不注入额外密钥。
+        run: |
+          cat > local.properties <<EOF
+          sdk.dir=${{ env.ANDROID_HOME }}
+          coomi.signing.storePassword=coomi
+          coomi.signing.keyPassword=coomi
+          EOF
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties', '**/*.gradle', 'gradle.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Run web type-check & build
+        if: ${{ !inputs.skip_checks }}
+        working-directory: apps/web
+        run: |
+          npm ci
+          npm run type-check
+          npm run build
+
+      - name: Run Rust checks
+        if: ${{ !inputs.skip_checks }}
+        working-directory: apps/coomi-rs
+        run: |
+          cargo fmt --all -- --check
+          cargo clippy --all-targets -- -D warnings
+          cargo test --no-run
+
+      - name: Build CoomiDev APK
+        working-directory: ${{ github.workspace }}
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_HOME }}
+        run: |
+          set -euo pipefail
+          echo "Building CoomiDev APK on $(uname -m) ..."
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME"
+          ./gradlew --no-daemon --max-workers=2 :app:assembleDebug
+
+      - name: Locate APK
+        id: locate
+        run: |
+          apk=$(find apps/coomi-app/app/build/outputs/apk -type f -name 'CoomiDev-*.apk' | sort | tail -n 1)
+          if [ -z "$apk" ]; then
+            apk=$(find apps/coomi-app/app/build/outputs/apk -type f -name '*.apk' | sort | tail -n 1)
+          fi
+          echo "apk_path=$apk" >> "$GITHUB_OUTPUT"
+          echo "apk_name=$(basename "$apk")" >> "$GITHUB_OUTPUT"
+          echo "Located APK: $apk"
+
+      - name: Verify package & signature
+        env:
+          AAPT2: ${{ env.ANDROID_HOME }}/build-tools/${{ env.ANDROID_BUILD_TOOLS }}/aapt2
+          APKSIGNER: ${{ env.ANDROID_HOME }}/build-tools/${{ env.ANDROID_BUILD_TOOLS }}/apksigner
+        run: |
+          set -euo pipefail
+          apk="${{ steps.locate.outputs.apk_path }}"
+          echo "Verifying: $apk"
+          "$AAPT2" dump badging "$apk" | grep "package: name='com.coomidev.android'" || \
+            { echo "ERROR: package is not com.coomidev.android"; exit 1; }
+          "$AAPT2" dump badging "$apk" | grep -E "application-label:'CoomiDev'|application-label: 'CoomiDev'" || \
+            { echo "ERROR: application label is not CoomiDev"; exit 1; }
+          "$AAPT2" dump badging "$apk" | grep "native-code: 'arm64-v8a'" || \
+            { echo "ERROR: missing arm64-v8a native code"; exit 1; }
+          "$APKSIGNER" verify --verbose "$apk"
+
+      - name: Generate checksums
+        run: |
+          apk="${{ steps.locate.outputs.apk_path }}"
+          (cd "$(dirname "$apk")" && sha256sum "$(basename "$apk")" > SHA256SUMS.txt)
+          cat "$(dirname "$apk")/SHA256SUMS.txt"
+
+      - name: Upload APK artifact
+        if: ${{ inputs.upload_apk }}
+        uses: actions/upload-artifact@ea165f8d65b6b75b540449e92b4886f43607fa02
+        with:
+          name: coomidev-apk
+          path: |
+            ${{ steps.locate.outputs.apk_path }}
+            ${{ steps.locate.outputs.apk_path }}.sha256
+          if-no-files-found: error
+          retention-days: 14

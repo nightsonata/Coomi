@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { useScrollRestore } from '@/composables/useScrollRestore'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSessionStore } from '@/stores/session'
 import PageHead from '@/components/PageHead.vue'
 import CoomiIcon from '@/components/CoomiIcon.vue'
 import { authedFetch, engineToken } from '@/bridge/http'
+useScrollRestore()
 
 interface Entry { name: string; is_dir: boolean; size: number; modified: number }
 interface ClipItem { path: string; name: string; isDir: boolean }

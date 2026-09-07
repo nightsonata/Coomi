@@ -5,6 +5,7 @@
  * 列表来自引擎磁盘会话（/api/sessions 为权威源），本地 localStorage 保存标题/置顶等
  * 元数据与最近对话正文；删除会话会同时删除引擎磁盘记录与本地记录。
  */
+import { useScrollRestore } from '@/composables/useScrollRestore'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSessionStore } from '@/stores/session'
@@ -12,6 +13,7 @@ import { useSessionsStore, formatSessionTime, type SessionMeta } from '@/stores/
 import { useConfigStore } from '@/stores/config'
 import PageHead from '@/components/PageHead.vue'
 import CoomiIcon from '@/components/CoomiIcon.vue'
+useScrollRestore()
 
 const router = useRouter()
 const session = useSessionStore()

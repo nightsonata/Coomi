@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { useScrollRestore } from '@/composables/useScrollRestore'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import PageHead from '@/components/PageHead.vue'
 import CoomiIcon from '@/components/CoomiIcon.vue'
 import { authedFetch } from '@/bridge/http'
 import { goBack } from '@/bridge/navigation'
+useScrollRestore()
 
 type EventName = 'session_start' | 'turn_start' | 'turn_end' | 'pre_tool_use' | 'post_tool_use'
 type KeywordMatch = 'disabled' | 'exact' | 'contains'

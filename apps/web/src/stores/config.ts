@@ -134,8 +134,8 @@ export const PERMISSION_MODES: { mode: PermissionMode; label: string; desc: stri
   { mode: 'full', label: '放行', desc: '全部自动执行（仅信任场景）' },
 ]
 
-export type ThemeMode = 'system' | 'light' | 'dark' | 'book' | 'orange' | 'ink' | 'abyss' | 'ember' | 'celadon' | 'linen'
-const THEME_VALUES: ThemeMode[] = ['system', 'light', 'dark', 'book', 'orange', 'ink', 'abyss', 'ember', 'celadon', 'linen']
+export type ThemeMode = 'system' | 'light' | 'dark' | 'book' | 'orange' | 'ink' | 'abyss' | 'ember' | 'celadon' | 'linen' | 'apple' | 'comic' | 'glass'
+const THEME_VALUES: ThemeMode[] = ['system', 'light', 'dark', 'book', 'orange', 'ink', 'abyss', 'ember', 'celadon', 'linen', 'apple', 'comic', 'glass']
 export const THEME_MODES: { mode: ThemeMode; label: string; desc: string }[] = [
   { mode: 'system', label: '跟随系统', desc: '与手机系统深浅色保持一致' },
   { mode: 'light', label: '明亮模式', desc: '始终使用浅色界面' },
@@ -147,6 +147,9 @@ export const THEME_MODES: { mode: ThemeMode; label: string; desc: string }[] = [
   { mode: 'ember', label: '炭褐', desc: '炭黑褐底面与余烬铜色点缀' },
   { mode: 'celadon', label: '青瓷', desc: '青瓷浅灰底面与釉绿色点缀' },
   { mode: 'linen', label: '亚麻', desc: '自然亚麻白底面与沉静靛色点缀' },
+  { mode: 'apple', label: 'Apple', desc: '浅色大圆角系统蓝' },
+  { mode: 'comic', label: 'Comic', desc: '纯白粗黑边高饱和' },
+  { mode: 'glass', label: 'Glass', desc: '深色毛玻璃气泡' },
 ]
 
 export const REASONING_EFFORTS: { value: ReasoningEffort; label: string }[] = [

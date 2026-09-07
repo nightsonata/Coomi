@@ -3,11 +3,13 @@
  * 数字生命体 · 心情日记（三级页）。
  * 由 LifeView「心情日记 > 查看更多」进入：全部主动问候日记 + 触发类型筛选。
  */
+import { useScrollRestore } from '@/composables/useScrollRestore'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiGet } from '@/bridge/http'
 import { goBack } from '@/bridge/navigation'
 import PageHead from '@/components/PageHead.vue'
+useScrollRestore()
 
 interface JournalEntry {
   at_ms: number

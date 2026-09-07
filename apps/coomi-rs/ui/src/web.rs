@@ -6082,6 +6082,7 @@ async fn compact_web_session(
         Arc::clone(&context.task),
         state.home.clone(),
         context.reasoning_effort.read().await.clone(),
+        format!("{}:{}", session.provider_id, session.model),
         session.usage.input_tokens,
         session.usage.cached_input_tokens,
         session.usage.cache_observed_input_tokens,
@@ -6384,6 +6385,7 @@ async fn run_turn(
         Arc::clone(&task),
         state.home.clone(),
         reasoning_effort.clone(),
+        format!("{}:{}", provider_config.provider_id, provider_config.model),
         session.usage.input_tokens,
         session.usage.cached_input_tokens,
         session.usage.cache_observed_input_tokens,
@@ -6710,6 +6712,7 @@ struct BrowserObserver {
     task: Arc<SessionTask>,
     home: PathBuf,
     reasoning_effort: String,
+    model: String,
     turn_started: StdMutex<Instant>,
     started: StdMutex<HashMap<String, Instant>>,
     download_calls: StdMutex<HashMap<String, String>>,
@@ -6743,6 +6746,7 @@ impl BrowserObserver {
         task: Arc<SessionTask>,
         home: PathBuf,
         reasoning_effort: String,
+        model: String,
         input_tokens: u64,
         cached_input_tokens: u64,
         cache_observed_input_tokens: u64,
@@ -6753,6 +6757,7 @@ impl BrowserObserver {
             task,
             home,
             reasoning_effort,
+            model,
             turn_started: StdMutex::new(Instant::now()),
             started: StdMutex::new(HashMap::new()),
             download_calls: StdMutex::new(HashMap::new()),
@@ -6917,13 +6922,14 @@ fn update_reasoning_stats(
     effort: &str,
     usage: &coomi_engine::TokenUsage,
     elapsed: Duration,
+    model: &str,
 ) {
     let lock = USAGE_FILE_LOCK.get_or_init(|| StdMutex::new(()));
     let _guard = lock.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
     let mut aggregates = load_reasoning_aggregates(home);
     let aggregate = aggregates.entry(effort.to_owned()).or_default();
     add_reasoning_sample(aggregate, usage, elapsed);
-    append_usage_ledger(home, effort, usage, elapsed);
+    append_usage_ledger(home, effort, usage, elapsed, model);
     if let Err(error) = save_reasoning_aggregates(home, &aggregates) {
         eprintln!("[usage] failed to save reasoning statistics: {error}");
     }
@@ -6931,7 +6937,7 @@ fn update_reasoning_stats(
 
 fn usage_ledger_path(home: &Path) -> PathBuf { home.join("usage").join("ledger.jsonl") }
 
-fn append_usage_ledger(home: &Path, effort: &str, usage: &coomi_engine::TokenUsage, elapsed: Duration) {
+fn append_usage_ledger(home: &Path, effort: &str, usage: &coomi_engine::TokenUsage, elapsed: Duration, model: &str) {
     let path = usage_ledger_path(home);
     if let Some(parent) = path.parent() { let _ = fs::create_dir_all(parent); }
     let entry = json!({
@@ -6942,6 +6948,7 @@ fn append_usage_ledger(home: &Path, effort: &str, usage: &coomi_engine::TokenUsa
         "output_tokens": usage.output_tokens,
         "total_tokens": usage.total_tokens(),
         "elapsed_ms": elapsed.as_millis(),
+        "model": model,
     });
     if let Ok(mut file) = fs::OpenOptions::new().create(true).append(true).open(path) {
         use std::io::Write;
@@ -6971,7 +6978,20 @@ async fn usage_ledger(
         }
     }
     records.reverse();
-    Ok(Json(json!({ "from": from, "to": to, "input_tokens": input, "cached_input_tokens": cached, "output_tokens": output, "total_tokens": total, "requests": records.len(), "records": records })))
+    // Build per-model summary
+    let mut by_model_map: std::collections::BTreeMap<String, (u64, u64, u64, u64)> = std::collections::BTreeMap::new();
+    for r in &records {
+        let m = r.get("model").and_then(Value::as_str).unwrap_or("unknown").to_string();
+        let e = by_model_map.entry(m).or_insert((0, 0, 0, 0));
+        e.0 += r.get("input_tokens").and_then(Value::as_u64).unwrap_or(0);
+        e.1 += r.get("cached_input_tokens").and_then(Value::as_u64).unwrap_or(0);
+        e.2 += r.get("output_tokens").and_then(Value::as_u64).unwrap_or(0);
+        e.3 += r.get("total_tokens").and_then(Value::as_u64).unwrap_or(0);
+    }
+    let by_model: Vec<Value> = by_model_map.into_iter().map(|(model, (inp, csh, out, tot))| {
+        json!({ "model": model, "input_tokens": inp, "cached_input_tokens": csh, "output_tokens": out, "total_tokens": tot })
+    }).collect();
+    Ok(Json(json!({ "from": from, "to": to, "input_tokens": input, "cached_input_tokens": cached, "output_tokens": output, "total_tokens": total, "requests": records.len(), "records": records, "by_model": by_model })))
 }
 
 fn add_reasoning_sample(
@@ -7277,7 +7297,7 @@ impl AgentObserver for BrowserObserver {
                     *started = Instant::now();
                     elapsed
                 };
-                update_reasoning_stats(&self.home, &self.reasoning_effort, turn, elapsed);
+                update_reasoning_stats(&self.home, &self.reasoning_effort, turn, elapsed, &self.model);
                 self.send_usage();
                 *self.first_token_at.lock().unwrap_or_else(|p| p.into_inner()) = None;
             }

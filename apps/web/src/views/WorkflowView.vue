@@ -4,12 +4,14 @@
  * 列表 → 详情（步骤概览 + cron 定时开关 + 运行历史 + JSON 编辑）+ 内置模板一键创建。
  * 引擎侧 API：/api/workflows（CRUD）、/{id}/run、/{id}/runs、/templates。
  */
+import { useScrollRestore } from '@/composables/useScrollRestore'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import PageHead from '@/components/PageHead.vue'
 import CoomiIcon from '@/components/CoomiIcon.vue'
 import { goBack } from '@/bridge/navigation'
 import { apiGet, apiSend } from '@/bridge/http'
+useScrollRestore()
 
 interface WorkflowListItem {
   id: string; name: string; description: string; origin: string; status: string

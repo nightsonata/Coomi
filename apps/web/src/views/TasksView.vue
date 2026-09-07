@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { useScrollRestore } from '@/composables/useScrollRestore'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import PageHead from '@/components/PageHead.vue'
 import CoomiIcon from '@/components/CoomiIcon.vue'
 import { useSessionStore } from '@/stores/session'
 import { useSessionsStore, type TaskDetail, type TaskInfo } from '@/stores/sessions'
+useScrollRestore()
 
 const router = useRouter()
 const session = useSessionStore()

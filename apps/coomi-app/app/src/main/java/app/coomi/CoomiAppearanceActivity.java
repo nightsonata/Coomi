@@ -48,7 +48,7 @@ public class CoomiAppearanceActivity extends Activity {
         R.id.radio_appearance_abyss, R.id.radio_appearance_ember, R.id.radio_appearance_celadon,
         R.id.radio_appearance_linen
     };
-    private final String[] modes = {"system", "light", "dark", "book", "orange", "ink", "abyss", "ember", "celadon", "linen"};
+    private final String[] modes = {"system", "light", "dark", "book", "orange", "ink", "abyss", "ember", "celadon", "linen", "apple", "comic", "glass"};
     private final String[] colorLabels = {
         "页面背景", "内容表面", "控件填充", "边框与分隔线", "主要文字", "次要文字", "弱化文字",
         "强调色", "成功状态", "警告状态", "危险状态"

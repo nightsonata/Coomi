@@ -4,12 +4,14 @@
  * 数据来自引擎 /api/catalog；安装走 /api/catalog/{mcp,skills}/install。
  * 交互：点击「安装」→ 弹出确认（名称/描述/来源/生效方式）→ MCP 再填参数，Skill 直接安装。
  */
+import { useScrollRestore } from '@/composables/useScrollRestore'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import PageHead from '@/components/PageHead.vue'
 import CoomiIcon from '@/components/CoomiIcon.vue'
 import { authedFetch } from '@/bridge/http'
 import { filterMarketItems } from '@/utils/marketSearch'
+useScrollRestore()
 
 const router = useRouter()
 

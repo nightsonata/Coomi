@@ -3,6 +3,7 @@
  * 设置。分组白卡 + 行的结构，选中态用蓝勾而不是描边 ——
  * 和抽屉、空态里的选中语言保持一致。
  */
+import { useScrollRestore } from '@/composables/useScrollRestore'
 import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useConfigStore, DEFAULT_CONNECTION_SETTINGS, PERMISSION_MODES, REASONING_EFFORTS, type ConnectionSettings } from '@/stores/config'
@@ -13,6 +14,7 @@ import { authedFetch } from '@/bridge/http'
 import type { PermissionMode } from '@/protocol/commands'
 import PageHead from '@/components/PageHead.vue'
 import CoomiIcon from '@/components/CoomiIcon.vue'
+useScrollRestore()
 
 const router = useRouter()
 const config = useConfigStore()

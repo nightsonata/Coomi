@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { useScrollRestore } from '@/composables/useScrollRestore'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import PageHead from '@/components/PageHead.vue'
 import CoomiIcon from '@/components/CoomiIcon.vue'
 import { authedFetch } from '@/bridge/http'
 import { goBack } from '@/bridge/navigation'
+useScrollRestore()
 
 type Scope = 'local' | 'project' | 'global'
 type MemoryType = 'user' | 'feedback' | 'project' | 'reference'

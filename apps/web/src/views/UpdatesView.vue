@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { useScrollRestore } from '@/composables/useScrollRestore'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import PageHead from '@/components/PageHead.vue'
 import { goBack } from '@/bridge/navigation'
+useScrollRestore()
 
 /** 更新通道：正式 / 测试，取自 updates.septemc.com 各自目录下的 latest.json。 */
 const CHANNELS = {

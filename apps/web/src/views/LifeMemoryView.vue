@@ -3,12 +3,14 @@
  * 数字生命体 · 记忆库（三级页）。
  * 由 LifeView「记忆 > 查看更多」进入：全量记忆列表 + 关键词检索。
  */
+import { useScrollRestore } from '@/composables/useScrollRestore'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiGet, apiSend } from '@/bridge/http'
 import { goBack } from '@/bridge/navigation'
 import PageHead from '@/components/PageHead.vue'
 import CoomiIcon from '@/components/CoomiIcon.vue'
+useScrollRestore()
 
 interface MemoryEntry {
   at_ms: number

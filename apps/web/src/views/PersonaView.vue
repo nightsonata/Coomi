@@ -4,11 +4,13 @@
  * 保存后置于每次对话系统提示词的最前（占位段），
  * 让 AI 首先认知自己的身份与定位。清空后保存 = 移除。
  */
+import { useScrollRestore } from '@/composables/useScrollRestore'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useConfigStore } from '@/stores/config'
 import PageHead from '@/components/PageHead.vue'
 import { goBack } from '@/bridge/navigation'
+useScrollRestore()
 
 const router = useRouter()
 const config = useConfigStore()

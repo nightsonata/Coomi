@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useScrollRestore } from '@/composables/useScrollRestore'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import PageHead from '@/components/PageHead.vue'
@@ -6,6 +7,7 @@ import CoomiIcon from '@/components/CoomiIcon.vue'
 import ModelPickerSheet from '@/components/ModelPickerSheet.vue'
 import ThemeSelect, { type ThemeSelectOption } from '@/components/ThemeSelect.vue'
 import {
+useScrollRestore()
   BUILTIN_PROVIDER_PRESETS,
   useConfigStore,
   type ProviderConfig,

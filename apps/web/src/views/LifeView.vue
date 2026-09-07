@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useScrollRestore } from '@/composables/useScrollRestore'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiGet, apiSend } from '@/bridge/http'
@@ -8,6 +9,7 @@ import { useSessionStore } from '@/stores/session'
 import PageHead from '@/components/PageHead.vue'
 import CoomiIcon from '@/components/CoomiIcon.vue'
 import ThemeSelect from '@/components/ThemeSelect.vue'
+useScrollRestore()
 
 interface LifeProfile {
   name: string

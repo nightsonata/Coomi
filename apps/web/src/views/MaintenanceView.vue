@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useScrollRestore } from '@/composables/useScrollRestore'
 import { nextTick, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiGet, apiSend } from '@/bridge/http'
@@ -6,6 +7,7 @@ import { goBack } from '@/bridge/navigation'
 import PageHead from '@/components/PageHead.vue'
 import CoomiIcon from '@/components/CoomiIcon.vue'
 import { useSessionStore } from '@/stores/session'
+useScrollRestore()
 const router = useRouter(); const items = ref<Array<{ path: string; size: number; safe: boolean }>>([]); const total = ref(0); const selected = ref<string[]>([]); const prompt = ref(''); const defaultPrompt = ref(''); const busy = ref(''); const notice = ref(''); const error = ref('')
 const session = useSessionStore()
 const size = (n: number) => n > 1048576 ? `${(n / 1048576).toFixed(1)} MB` : `${Math.round(n / 1024)} KB`

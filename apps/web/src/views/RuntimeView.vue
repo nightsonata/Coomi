@@ -5,12 +5,14 @@
  * 之前这页是假的（写死的步骤列表 + setInterval 推进度条）。现在全部来自
  * GET /api/runtime/health 与 GET /api/runtime/port —— 引擎没起来就老实说没起来。
  */
+import { useScrollRestore } from '@/composables/useScrollRestore'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { apiGet, apiSend } from '@/bridge/http'
 import { useConnectionStore } from '@/stores/connection'
 import PageHead from '@/components/PageHead.vue'
 import CoomiIcon from '@/components/CoomiIcon.vue'
+useScrollRestore()
 
 interface Health {
   status: string

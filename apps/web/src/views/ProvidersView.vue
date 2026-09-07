@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { useScrollRestore } from '@/composables/useScrollRestore'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import PageHead from '@/components/PageHead.vue'
 import CoomiIcon from '@/components/CoomiIcon.vue'
 import ThemeSelect from '@/components/ThemeSelect.vue'
 import { useConfigStore, type CollaborationSettings, type ProviderConfig, type ProviderStatus, type SubAgentConfig } from '@/stores/config'
+useScrollRestore()
 
 const router = useRouter()
 const config = useConfigStore()

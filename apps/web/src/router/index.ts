@@ -26,4 +26,8 @@ export const router = createRouter({
     { path: '/usage', name: 'usage', component: () => import('@/views/UsageView.vue') },
     { path: '/updates', name: 'updates', component: () => import('@/views/UpdatesView.vue') },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) return savedPosition
+    return { top: 0 }
+  },
 })

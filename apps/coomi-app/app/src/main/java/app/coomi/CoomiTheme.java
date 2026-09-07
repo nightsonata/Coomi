@@ -69,6 +69,9 @@ public final class CoomiTheme {
     public static final String MODE_EMBER = "ember";
     public static final String MODE_CELADON = "celadon";
     public static final String MODE_LINEN = "linen";
+    public static final String MODE_APPLE = "apple";
+    public static final String MODE_COMIC = "comic";
+    public static final String MODE_GLASS = "glass";
 
     public static final String PREF_THEME_MODE = "coomi.themeMode";
     public static final String PREF_DIGITAL_LIFE_ENABLED = "coomi.digitalLifeEnabled";
@@ -130,7 +133,7 @@ public final class CoomiTheme {
             return luminance < 0.45;
         }
         String mode = getMode(context);
-        if (MODE_DARK.equals(mode) || MODE_INK.equals(mode) || MODE_ABYSS.equals(mode) || MODE_EMBER.equals(mode)) return true;
+        if (MODE_DARK.equals(mode) || MODE_INK.equals(mode) || MODE_ABYSS.equals(mode) || MODE_EMBER.equals(mode) || MODE_GLASS.equals(mode)) return true;
         if (!MODE_SYSTEM.equals(mode)) return false;
         int night = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
         return night == Configuration.UI_MODE_NIGHT_YES;

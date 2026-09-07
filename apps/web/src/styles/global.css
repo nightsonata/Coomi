@@ -237,6 +237,83 @@
   --orange: #b66b4e; --orange-soft: #f4e8e2; --orange-border: #ddbeb1;
   --bg-card: #fffefa; --bg-input: #f4f2ed; --bg-elevated: #fffefa; --user-bubble: #4f607f;
 }
+
+/* ========== 新增预设：Apple（浅色大圆角系统蓝） ========== */
+:root[data-theme='apple'] {
+  color-scheme: light;
+  --bg: #f5f5f7; --page: #e8e8ed; --fill: #ebebed; --fill-strong: #d5d5da; --fill-press: #c7c7cc;
+  --border: #d2d2d7; --border-strong: #c7c7cc;
+  --text: #1d1d1f; --text-2: #6e6e73; --text-3: #aeaeb2;
+  --blue: #0071e3; --blue-press: #0060c0; --blue-soft: #e8f0fe; --blue-soft-2: #d4e4fb; --blue-border: #a8c8f0;
+  --orange: #ff9500; --orange-soft: #fff3e0; --orange-border: #ffcc80;
+  --bg-card: #ffffff; --bg-input: #f5f5f7; --bg-elevated: #ffffff; --user-bubble: #0071e3;
+}
+:root[data-theme='apple'] .app-body { font-family: -apple-system, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+:root[data-theme='apple'] .app-card { border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+:root[data-theme='apple'] .btn { border-radius: 12px; font-weight: 500; }
+:root[data-theme='apple'] .app-drawer { border-radius: 0 20px 20px 0; }
+
+/* ========== 新增预设：Comic（纯白 + 粗黑边 + 高饱和） ========== */
+:root[data-theme='comic'] {
+  color-scheme: light;
+  --bg: #ffffff; --page: #f5f5f5; --fill: #f0f0f0; --fill-strong: #e0e0e0; --fill-press: #d0d0d0;
+  --border: #000000; --border-strong: #000000;
+  --text: #000000; --text-2: #333333; --text-3: #666666;
+  --blue: #ff2d55; --blue-press: #d6244a; --blue-soft: #ffe5ec; --blue-soft-2: #ffd0dc; --blue-border: #ff2d55;
+  --orange: #ff9500; --orange-soft: #fff3e0; --orange-border: #ff9500;
+  --bg-card: #ffffff; --bg-input: #ffffff; --bg-elevated: #ffffff; --user-bubble: #000000;
+}
+:root[data-theme='comic'] .app-body { font-family: 'Comic Sans MS', 'Marker Felt', 'Trebuchet MS', sans-serif; }
+:root[data-theme='comic'] .app-card { border: 2px solid #000; border-radius: 12px; box-shadow: 3px 3px 0 #000; }
+:root[data-theme='comic'] .btn { border: 2px solid #000; border-radius: 10px; box-shadow: 2px 2px 0 #000; font-weight: 700; }
+:root[data-theme='comic'] .btn.primary { background: #000; color: #fff; }
+:root[data-theme='comic'] .btn.primary:hover { background: #333; }
+:root[data-theme='comic'] .app-drawer { border-right: 3px solid #000; border-radius: 0 12px 12px 0; }
+
+/* ========== 新增预设：Frosted Glass（深色 + 毛玻璃气泡） ========== */
+:root[data-theme='glass'] {
+  color-scheme: dark;
+  --bg: #0a0a14; --page: #0d0d1a; --fill: rgba(255,255,255,.06); --fill-strong: rgba(255,255,255,.1); --fill-press: rgba(255,255,255,.14);
+  --border: rgba(255,255,255,.1); --border-strong: rgba(255,255,255,.18);
+  --text: #f0f0ff; --text-2: #b8b8d0; --text-3: #7878a0;
+  --blue: #7c7cff; --blue-press: #6464e0; --blue-soft: rgba(124,124,255,.15); --blue-soft-2: rgba(124,124,255,.25); --blue-border: rgba(124,124,255,.3);
+  --orange: #ff8a5c; --orange-soft: rgba(255,138,92,.15); --orange-border: rgba(255,138,92,.3);
+  --bg-card: rgba(255,255,255,.06); --bg-input: rgba(255,255,255,.06); --bg-elevated: rgba(255,255,255,.08); --user-bubble: rgba(124,124,255,.35);
+}
+:root[data-theme='glass'] .app-body {
+  background: linear-gradient(135deg, #0a0a14 0%, #1a1a2e 40%, #16213e 70%, #0f3460 100%) !important;
+  background-attachment: fixed !important;
+}
+:root[data-theme='glass'] .app-card {
+  background: rgba(255,255,255,.06) !important;
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,.1) !important;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.25) !important;
+}
+:root[data-theme='glass'] .btn {
+  background: rgba(255,255,255,.06) !important;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.12) !important;
+  border-radius: 14px;
+}
+:root[data-theme='glass'] .btn.primary {
+  background: rgba(124,124,255,.25) !important;
+  border: 1px solid rgba(124,124,255,.35) !important;
+}
+:root[data-theme='glass'] .btn.primary:hover {
+  background: rgba(124,124,255,.35) !important;
+}
+:root[data-theme='glass'] .app-drawer {
+  background: rgba(10,10,20,.85) !important;
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border-right: 1px solid rgba(255,255,255,.08) !important;
+  border-radius: 0 20px 20px 0;
+  box-shadow: -4px 0 24px rgba(0,0,0,.3) !important;
+}
+:root[data-theme='glass'] .app-drawer-footer {
+  border-top: 1px solid rgba(255,255,255,.08) !important;
+}
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 /* 点击不出现蓝色高亮方块：WebView 的 tap highlight / focus ring 全部去掉，
    交互反馈交给各组件自己的 :active 样式。 */

@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { useScrollRestore } from '@/composables/useScrollRestore'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useConfigStore, THEME_MODES } from '@/stores/config'
 import PageHead from '@/components/PageHead.vue'
 import CoomiIcon from '@/components/CoomiIcon.vue'
 import { goBack } from '@/bridge/navigation'
+useScrollRestore()
 
 const router = useRouter()
 const config = useConfigStore()

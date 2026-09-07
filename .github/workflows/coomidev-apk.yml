@@ -181,7 +181,7 @@ jobs:
 
       - name: Upload APK artifact
         if: ${{ inputs.upload_apk }}
-        uses: actions/upload-artifact@ea165f8d65b6b75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@ea165f8d65b6b75e75b540449e92b4886f43607fa02
         with:
           name: coomidev-apk
           path: |
